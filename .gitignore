@@ -6,7 +6,7 @@ crash.log
 crash.*.log
 # Provider plugins and local Terraform working dir
 .terraform/
-.terraform.lock.hcl
+# NOTE: .terraform.lock.hcl is intentionally committed (pins provider versions)
 # Variable files that may hold secrets
 *.tfvars
 *.tfvars.json
