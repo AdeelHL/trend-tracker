@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ISS Trend Tracker</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <style>
+      :root {
+        --bg: #0b1020;
+        --card: #161c33;
+        --accent: #4cc2ff;
+        --text: #e8ecf5;
+        --muted: #8a93ad;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+      }
+      header {
+        padding: 24px 20px 12px;
+        text-align: center;
+      }
+      h1 { margin: 0; font-size: 1.6rem; }
+      .sub { color: var(--muted); margin-top: 4px; font-size: 0.9rem; }
+      .stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        justify-content: center;
+        padding: 16px 20px;
+      }
+      .card {
+        background: var(--card);
+        border-radius: 12px;
+        padding: 14px 18px;
+        min-width: 150px;
+        text-align: center;
+      }
+      .card .label { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+      .card .value { font-size: 1.4rem; font-weight: 600; margin-top: 4px; color: var(--accent); }
+      #map {
+        height: 60vh;
+        margin: 8px 20px 20px;
+        border-radius: 12px;
+      }
+      footer { text-align: center; color: var(--muted); font-size: 0.8rem; padding-bottom: 24px; }
+      .dot { height: 9px; width: 9px; background: #36d399; border-radius: 50%; display: inline-block; margin-right: 6px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>🛰️ ISS Trend Tracker</h1>
+      <div class="sub"><span class="dot"></span>Live position of the International Space Station, served from my AWS serverless API</div>
+    </header>
+
+    <section class="stats" id="stats">
+      <div class="card"><div class="label">Latitude</div><div class="value" id="lat">—</div></div>
+      <div class="card"><div class="label">Longitude</div><div class="value" id="lon">—</div></div>
+      <div class="card"><div class="label">Altitude</div><div class="value" id="alt">—</div></div>
+      <div class="card"><div class="label">Velocity</div><div class="value" id="vel">—</div></div>
+      <div class="card"><div class="label">Last reading</div><div class="value" id="ts" style="font-size:0.95rem;">—</div></div>
+    </section>
+
+    <div id="map"></div>
+
+    <footer>Built with AWS Lambda · API Gateway · DynamoDB · Terraform · GitHub Actions (CI/CD)</footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      // The public API built in this project. Change if you redeploy.
+      const API = "https://snvx8qci5e.execute-api.us-east-2.amazonaws.com";
+
+      const map = L.map("map").setView([0, 0], 2);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+        maxZoom: 6,
+      }).addTo(map);
+
+      const issIcon = L.divIcon({ html: "🛰️", className: "", iconSize: [28, 28] });
+      let marker = null;
+      let path = null;
+
+      async function refresh() {
+        try {
+          const res = await fetch(`${API}/history?limit=50`);
+          const rows = await res.json();
+          if (!rows.length) return;
+
+          // API returns newest-first; reverse to draw the path in time order.
+          const ordered = [...rows].reverse();
+          const latlngs = ordered.map((r) => [r.latitude, r.longitude]);
+          const latest = rows[0];
+
+          // Stat cards
+          document.getElementById("lat").textContent = latest.latitude.toFixed(2) + "°";
+          document.getElementById("lon").textContent = latest.longitude.toFixed(2) + "°";
+          document.getElementById("alt").textContent = Math.round(latest.altitude_km) + " km";
+          document.getElementById("vel").textContent = Math.round(latest.velocity_kmh).toLocaleString() + " km/h";
+          document.getElementById("ts").textContent = new Date(latest.ts).toLocaleTimeString();
+
+          // Path + marker
+          if (path) path.remove();
+          path = L.polyline(latlngs, { color: "#4cc2ff", weight: 2 }).addTo(map);
+
+          const pos = [latest.latitude, latest.longitude];
+          if (marker) marker.setLatLng(pos);
+          else marker = L.marker(pos, { icon: issIcon }).addTo(map);
+          map.setView(pos, 3);
+        } catch (e) {
+          console.error("Failed to load ISS data:", e);
+        }
+      }
+
+      refresh();
+      setInterval(refresh, 10000); // refresh every 10 seconds
+    </script>
+  </body>
+</html>

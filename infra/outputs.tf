@@ -29,3 +29,8 @@ output "gha_deploy_role_arn" {
   description = "ARN of the role GitHub Actions assumes to deploy"
   value       = aws_iam_role.gha_deploy.arn
 }
+
+output "dashboard_url" {
+  description = "Public URL of the S3-hosted dashboard"
+  value       = "http://${aws_s3_bucket_website_configuration.site.website_endpoint}"
+}

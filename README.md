@@ -37,4 +37,4 @@ GitHub push ─▶ GitHub Actions ─(OIDC, keyless)─▶ terraform apply ─�
 - [ ] Stage 5 — EventBridge schedule
 - [ ] Stage 6 — Tests
 - [x] Stage 7 — CI/CD (GitHub Actions + OIDC)
-- [ ] Stage 8 — Polish
+- [x] Stage 8 — Polish

@@ -101,6 +101,17 @@ data "aws_iam_policy_document" "gha_deploy_perms" {
       "arn:aws:s3:::trend-tracker-tfstate-${data.aws_caller_identity.current.account_id}/*",
     ]
   }
+
+  # (e) S3 — full control of ONLY the dashboard website bucket.
+  statement {
+    sid     = "DashboardBucket"
+    effect  = "Allow"
+    actions = ["s3:*"]
+    resources = [
+      "arn:aws:s3:::${var.project_name}-site-${data.aws_caller_identity.current.account_id}",
+      "arn:aws:s3:::${var.project_name}-site-${data.aws_caller_identity.current.account_id}/*",
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "gha_deploy_perms" {
