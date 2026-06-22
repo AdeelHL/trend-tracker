@@ -9,3 +9,13 @@ output "function_arn" {
   description = "ARN (unique AWS id) of the Lambda function"
   value       = aws_lambda_function.hello.arn
 }
+
+output "ingest_function_name" {
+  description = "Name of the ingest Lambda"
+  value       = aws_lambda_function.ingest.function_name
+}
+
+output "table_name" {
+  description = "DynamoDB table storing the time series"
+  value       = aws_dynamodb_table.data.name
+}
