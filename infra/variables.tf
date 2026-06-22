@@ -11,3 +11,9 @@ variable "project_name" {
   type        = string
   default     = "trend-tracker"
 }
+
+variable "github_repo" {
+  description = "owner/repo allowed to assume the GitHub Actions deploy role"
+  type        = string
+  default     = "AdeelHL/trend-tracker"
+}

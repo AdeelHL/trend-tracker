@@ -24,3 +24,8 @@ output "api_base_url" {
   description = "Public base URL of the API (append /latest or /history)"
   value       = aws_apigatewayv2_api.http.api_endpoint
 }
+
+output "gha_deploy_role_arn" {
+  description = "ARN of the role GitHub Actions assumes to deploy"
+  value       = aws_iam_role.gha_deploy.arn
+}
