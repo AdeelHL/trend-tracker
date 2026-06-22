@@ -29,6 +29,7 @@ env/
 *.zip
 build/
 dist/
+response.json
 
 # --- OS / editor ---
 .DS_Store
