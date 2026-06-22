@@ -33,7 +33,7 @@ GitHub push ─▶ GitHub Actions ─(OIDC, keyless)─▶ terraform apply ─�
 - [x] Stage 1 — First Lambda by hand
 - [x] Stage 2 — Infrastructure with Terraform
 - [x] Stage 3 — DynamoDB + ingest Lambda
-- [ ] Stage 4 — API Gateway + api Lambda
+- [x] Stage 4 — API Gateway + api Lambda
 - [ ] Stage 5 — EventBridge schedule
 - [ ] Stage 6 — Tests
 - [ ] Stage 7 — CI/CD (GitHub Actions + OIDC)

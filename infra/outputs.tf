@@ -19,3 +19,8 @@ output "table_name" {
   description = "DynamoDB table storing the time series"
   value       = aws_dynamodb_table.data.name
 }
+
+output "api_base_url" {
+  description = "Public base URL of the API (append /latest or /history)"
+  value       = aws_apigatewayv2_api.http.api_endpoint
+}
